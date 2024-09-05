@@ -1,4 +1,3 @@
-this code :p
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -16,6 +15,7 @@ namespace WindowsFormsApp4
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -48,29 +48,32 @@ namespace WindowsFormsApp4
         private void Draw(Point location)
         {
             using (Pen pen = new Pen(currentColor, brushSize))
-            using (Graphics g = Graphics.FromImage(bitmap))
             {
-                g.DrawLine(pen, previousPoint, location);
+                graphics.DrawLine(pen, previousPoint, location);
             }
             pictureBox1.Invalidate();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ColorDialog colorDialog = new ColorDialog();
-            if (colorDialog.ShowDialog() == DialogResult.OK)
+            using (ColorDialog colorDialog = new ColorDialog())
             {
-                currentColor = colorDialog.Color;
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    currentColor = colorDialog.Color;
+                }
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "PNG files (*.png)|*.png|All files (*.*)|*.*";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                bitmap.Save(saveFileDialog.FileName);
+                saveFileDialog.Filter = "PNG files (*.png)|*.png|All files (*.*)|*.*";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    bitmap.Save(saveFileDialog.FileName);
+                }
             }
         }
 
@@ -81,5 +84,11 @@ namespace WindowsFormsApp4
                 brushSize = size;
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            graphics.Clear(Color.White);
+            pictureBox1.Invalidate();
+        }
     }
-} 
+}
